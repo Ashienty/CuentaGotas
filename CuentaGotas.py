@@ -111,9 +111,12 @@ cuentaHilo = None
 #Nuevo Contenedor
 mainContent = QWidget()
 mainLayout = QVBoxLayout(mainContent)
+#Actividad
+statusLabel=QLabel("●")
+statusLabel.setStyleSheet("color:Red; font-size: 14px;")
+mainLayout.addWidget(statusLabel)
 #Botones e inputs  del nuevo contenedor
 validador = QIntValidator(1, 59)
-
 minutosInput = QLineEdit()
 minutosInput.setPlaceholderText("Minutos")
 minutosInput.setFixedWidth(150)
@@ -142,6 +145,8 @@ layout.addWidget(mainContent)
 ##Funciones de los botones e inputs 
 def iniciarCuenta():
     global cuentaHilo
+    statusLabel.setText("●")
+    statusLabel.setStyleSheet("color:green; font-size: 14px;")
     if cuentaHilo and cuentaHilo.isRunning():
         return
     if not minutosInput.text() or not horasInput.text():
@@ -156,6 +161,8 @@ def iniciarCuenta():
     cuentaHilo.start()
 def detenerCuenta():
     global cuentaHilo
+    statusLabel.setText("●")
+    statusLabel.setStyleSheet("color: red; font-size: 14px;")
     if cuentaHilo and cuentaHilo.isRunning():
         cuentaHilo.stop()
 ##Acciones de los botones
