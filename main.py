@@ -159,15 +159,15 @@ class CustomMainWindow(QMainWindow):
         play_layout.setSpacing(0)
         #Temporizador y sonidos
         self.timer = QTimer()
-        self.timer.setInterval(50)
+        self.timer.setInterval(60000)
         self.timer.timeout.connect(self.tick)
     def tick(self):
         if self.estado:
             if self.minuto % self.inputMinuto == 0 and self.minuto!=0:
-                winsound.PlaySound("Sonidos/corto.wav", winsound.SND_FILENAME)
+                winsound.PlaySound("Sonidos/corto.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
             else:
                 if self.hora!=0 and self.hora%self.inputHora==0 and self.minuto==0:                
-                    winsound.PlaySound("Sonidos/largo.wav", winsound.SND_FILENAME)
+                    winsound.PlaySound("Sonidos/largo.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
             self.minuto += 1
             print(self.minuto)
             if self.minuto==60:
@@ -179,8 +179,6 @@ class CustomMainWindow(QMainWindow):
                 self.tiempoText.setText(str(self.hora) + ":" +"0"+ str(self.minuto))
             else:
                 self.tiempoText.setText(str(self.hora) + ":" + str(self.minuto))
-
-
     # Arrastrar ventana
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -191,12 +189,6 @@ class CustomMainWindow(QMainWindow):
             self.move(self.pos() + event.globalPosition().toPoint() - self.dragPos)
             self.dragPos = event.globalPosition().toPoint()
             self.setFocus()
-
-
-
-
-
-
 # Aplicación
 if __name__ == "__main__":
     app = QApplication(sys.argv)
