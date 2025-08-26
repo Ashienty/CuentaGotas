@@ -27,3 +27,5 @@ Ejecutar la aplicación:
 python main.py
 Nota
 Funciona en Windows debido a la dependencia winsound. Para otros sistemas, se debería reemplazar por otra librería de sonido compatible.
+##Compilacion
+Para compilar usen nuitka " python -m nuitka --onefile --windows-disable-console --enable-plugin=pyside6 main.py " con pyinstaller hay muchos errores
