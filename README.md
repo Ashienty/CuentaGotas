@@ -28,4 +28,4 @@ python main.py
 Nota
 Funciona en Windows debido a la dependencia winsound. Para otros sistemas, se debería reemplazar por otra librería de sonido compatible.
 ##Compilacion
-Para compilar usen nuitka " python -m nuitka --onefile --windows-disable-console --enable-plugin=pyside6 main.py " con pyinstaller hay muchos errores
+Para compilar usen nuitka " python -m nuitka --onefile --windows-console-mode=disable --enable-plugin=pyside6 --windows-icon-from-ico=icono.ico --lto=yes main.py --include-data-files="Sonidos/*.png=Sonidos/" --include-data-files="Sonidos/*.wav=Sonidos/" " con pyinstaller hay muchos errores
