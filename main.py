@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel,QLineEdit,QSizePolicy
 from PySide6.QtCore import Qt,QObject, QTimer, Signal, QThread
 from PySide6.QtGui import QIcon,QPixmap,QIntValidator
-import sys, winsound, time
+import sys, winsound, time, os
 
 class CustomMainWindow(QMainWindow):
     def __init__(self):
@@ -11,12 +11,20 @@ class CustomMainWindow(QMainWindow):
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint| Qt.WindowType.WindowStaysOnTopHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
-        #rgba(128, 41, 34, 0.8); el rojo que me gusta para el borde y rgba(34, 128, 34, 0.8) verde que me gusta
+        #Rutas de archivos
+        basePath = os.path.dirname(__file__)
+        iconPlayPath = os.path.join(basePath, "Sonidos", "play.png")
+        iconPausePath = os.path.join(basePath, "Sonidos", "pause.png")
+        iconMainPath = os.path.join(basePath, "Sonidos", "Simbolo Opcional minimalista.png")
+        sonidoCortoPath = os.path.join(basePath, "Sonidos", "corto.wav")
+        sonidoLargoPath = os.path.join(basePath, "Sonidos", "largo.wav")
+        #Inicializar Variables
         self.estado=False
         self.minuto=0
         self.hora=0
         self.inputMinuto=10
         self.inputHora=1
+        # Estilo
         def estilo():
             estadoColor = "rgba(128, 41, 34, 0.8)" if not self.estado else "rgba(34, 128, 34, 0.8)"
             playColor= "rgba(34, 128, 34, 0.8)" if not self.estado else "rgba(128, 41, 34, 0.8)"
@@ -64,7 +72,7 @@ class CustomMainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         central_widget.setObjectName("centralWidget")
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setContentsMargins(0, 0, 0, 0)        
+        main_layout.setContentsMargins(0, 0, 0, 0)
         # Barra de título
         title_bar = QWidget()
         title_bar.setFixedHeight(30)
@@ -75,7 +83,7 @@ class CustomMainWindow(QMainWindow):
         main_layout.setAlignment(title_bar,Qt.AlignmentFlag.AlignTop)
         # Icono a la izquierda
         icon_label = QLabel()
-        icon = QIcon("Sonidos/Simbolo Opcional minimalista.png")
+        icon = QIcon(iconMainPath)
         icon_label.setPixmap(icon.pixmap(20, 20))
         title_layout.addWidget(icon_label)
         title_text = QLabel("Cuenta Gotas")
@@ -102,7 +110,7 @@ class CustomMainWindow(QMainWindow):
         buttons_layout.addWidget(close_label)
         title_layout.addWidget(buttons_widget)
         title_layout.setAlignment(buttons_widget,Qt.AlignmentFlag.AlignRight)
-        #Temporizador
+        # Temporizador
         tiempo=QWidget(self)
         tiempo_layout=QVBoxLayout(tiempo)
         main_layout.addWidget(tiempo)
@@ -125,31 +133,28 @@ class CustomMainWindow(QMainWindow):
         self.horas.setPlaceholderText("1 Hora por defecto")
         inputs_layout.addWidget(self.horas)
         self.setFocus()
-        #Play pausa
+        # Play pausa
         play = QWidget(self)
         play.setObjectName("play")
-        play_layout =QVBoxLayout(play)
+        play_layout = QVBoxLayout(play)
         main_layout.addWidget(play)
         playBoton=QLabel()
         playBoton.setObjectName("playBoton")
-        playIcon=QPixmap("Sonidos/play.png").scaled(25, 25)
+        playIcon=QPixmap(iconPlayPath).scaled(25, 25)
         playBoton.setPixmap(playIcon)
         play_layout.addWidget(playBoton)
         play_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
-        playBoton.mousePressEvent = lambda event: cambiarIcono()
-        #Boton play / pause
+        # Boton play / pause
         def cambiarIcono():
-            if playBoton.pixmap().toImage() == QPixmap("Sonidos/play.png").scaled(25, 25).toImage():
-                playBoton.setPixmap(QPixmap("Sonidos/pause.png").scaled(25, 25))
-                self.estado=True
+            self.estado = not self.estado
+            playBoton.setPixmap(QPixmap(iconPausePath if self.estado else iconPlayPath).scaled(25, 25))
+            if self.estado:
                 self.timer.start()
-                estilo()
             else:
-                playBoton.setPixmap(QPixmap("Sonidos/play.png").scaled(25, 25))
-                self.estado=False
                 self.timer.stop()
-                estilo()
-        #Espaciado
+            estilo()
+        playBoton.mousePressEvent = lambda event: cambiarIcono()
+        # Espaciado
         main_layout.setSpacing(2)
         tiempo_layout.setContentsMargins(10, 0, 10, 10)
         tiempo_layout.setSpacing(0)
@@ -157,17 +162,17 @@ class CustomMainWindow(QMainWindow):
         inputs_layout.setSpacing(2)
         play_layout.setContentsMargins(0, 0, 0, 10)
         play_layout.setSpacing(0)
-        #Temporizador y sonidos
+        # Temporizador y sonidos
         self.timer = QTimer()
-        self.timer.setInterval(60000)
-        self.timer.timeout.connect(self.tick)
-    def tick(self):
+        self.timer.setInterval(60000)  # 1 minuto
+        self.timer.timeout.connect(lambda: self.tick(sonidoCortoPath, sonidoLargoPath))
+    def tick(self, sonidoCortoPath, sonidoLargoPath):
         if self.estado:
             if self.minuto % self.inputMinuto == 0 and self.minuto!=0:
-                winsound.PlaySound("Sonidos/corto.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+                winsound.PlaySound(sonidoCortoPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             else:
                 if self.hora!=0 and self.hora%self.inputHora==0 and self.minuto==0:                
-                    winsound.PlaySound("Sonidos/largo.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+                    winsound.PlaySound(sonidoLargoPath, winsound.SND_FILENAME | winsound.SND_ASYNC)
             self.minuto += 1
             print(self.minuto)
             if self.minuto==60:
@@ -175,10 +180,7 @@ class CustomMainWindow(QMainWindow):
                 self.hora +=1
                 if self.hora==99:
                     self.hora=0
-            if self.minuto<10:
-                self.tiempoText.setText(str(self.hora) + ":" +"0"+ str(self.minuto))
-            else:
-                self.tiempoText.setText(str(self.hora) + ":" + str(self.minuto))
+            self.tiempoText.setText(f"{self.hora}:{self.minuto:02d}")
     # Arrastrar ventana
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -189,7 +191,7 @@ class CustomMainWindow(QMainWindow):
             self.move(self.pos() + event.globalPosition().toPoint() - self.dragPos)
             self.dragPos = event.globalPosition().toPoint()
             self.setFocus()
-# Aplicación
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = CustomMainWindow()
