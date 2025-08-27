@@ -2,6 +2,17 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide6.QtCore import Qt,QObject, QTimer, Signal, QThread
 from PySide6.QtGui import QIcon,QPixmap,QIntValidator
 import sys, winsound, time, os
+#Importante para el compilador
+# Importante para el compilador
+if getattr(sys, "frozen", False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+iconPlayPath = os.path.join(BASE_DIR, "Sonidos", "play.png")
+iconPausePath = os.path.join(BASE_DIR, "Sonidos", "pause.png")
+iconMainPath = os.path.join(BASE_DIR, "Sonidos", "Simbolo Opcional minimalista.png")
+sonidoCortoPath = os.path.join(BASE_DIR, "Sonidos", "corto.wav")
+sonidoLargoPath = os.path.join(BASE_DIR, "Sonidos", "largo.wav")
 
 class CustomMainWindow(QMainWindow):
     def __init__(self):
